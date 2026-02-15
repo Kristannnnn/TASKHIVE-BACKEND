@@ -56,7 +56,7 @@ const bootstrap = async () => {
   // Routes
   app.use("/api/users", userRoutes);
   app.use("/api/tasks", taskRoutes);
-  app.use("/api/login", loginRouter);
+  app.use("/api/login", loginRouter, );
   // Error handler
   app.use(globalErrorHandler);
   const server = http.createServer(app);
