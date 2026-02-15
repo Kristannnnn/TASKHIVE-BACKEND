@@ -3,12 +3,12 @@ import { Request, Response } from "express";
 
 //Create new task
 export const createTask = async (req: Request, res: Response) => {
-  const { task, status } = req.body;
-  if (!task || !status) {
+  const { taskName, category, status } = req.body;
+  if (!taskName || !status) {
     return res.status(400).json({ message: "Task and status are required" });
   }
   try {
-    const newTask = await Tasks.create({ task, status });
+    const newTask = await Tasks.create({ taskName, category, status,  });
     res
       .status(201)
       .json({ message: "task created successfully", data: newTask });
@@ -49,3 +49,37 @@ export const getTask = async (req: Request, res: Response) => {
 };
 
 //Update task
+export const updateTask = async (req: Request, res: Response) => {
+  try {
+    
+    const { taskName, category, status } = req.body();
+    const updateData: any = {};
+    if (taskName) updateData.taskName = taskName;
+    if (category) updateData.category = category;
+    if (status) updateData.status = status;
+
+    const updateTasks = await Tasks.findByIdAndUpdate(req.params.id, updateTask, {
+      returnDocument : "after",
+    });
+    if (!updateTasks) {
+      return res.status(404).json({message: "user not found"})
+    }
+    res.json(updateTasks);
+
+  } catch (err) {
+    return res.status(400).json({message: "failed to update user"})
+  }
+}
+
+//delete task
+export const deleteTask = async (req: Request, res: Response) => {
+  try {
+    const deleteTask = await Tasks.findByIdAndDelete(req.params.id);
+    if (!deleteTask) {
+      return res.status(404).json({ message: "task not found" });
+    }
+    res.status(200).json({ message: "Task deleted successfully" });
+  } catch (err) {
+    return res.status(400).json({message: "Failed to delete task" });
+  }
+}
