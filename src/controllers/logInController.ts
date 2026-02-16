@@ -1,4 +1,5 @@
 import User from "@/models/Users";
+import { generateToken } from "@/utils/error/generateToken";
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 
@@ -11,22 +12,22 @@ export const logInUser = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const passwordMatch = await bcrypt.compare(
-      password,
-      user.passwordHash,
-    );
+    const passwordMatch = await bcrypt.compare(password, user.passwordHash);
     if (!passwordMatch) {
       return res.status(401).json({ message: "Invalid password" });
     }
-    res.json({ 
-      message: "Login successful", 
+    const token = generateToken(user._id.toString());
+    res.json({
+      message: "Login successful",
+      token,
       user: {
         id: user._id,
         username: user.username,
-        email: user.email
-      }
+        email: user.email,
+      },
     });
   } catch (err) {
-    res.status(400).json({ message: "Error logging in user", error: err });
+    console.error("LOGIN ERROR:", err);
+    res.status(400).json({ message: "Error logging in user" });
   }
 };
