@@ -1,24 +1,48 @@
-import Tasks from "@/models/Tasks";
+import { AuthRequest } from "@/middlewares/auth";
+import { default as Tasks } from "@/models/Tasks";
 import { Request, Response } from "express";
 
-//Create new task
-export const createTask = async (req: Request, res: Response) => {
-  const { taskName, category, status } = req.body;
-  if (!taskName || !status) {
-    return res.status(400).json({ message: "Task and status are required" });
-  }
+export const getTasksByCategory = async (req: AuthRequest, res: Response) => {
   try {
-    const newTask = await Tasks.create({ taskName, category, status,  });
-    res
-      .status(201)
-      .json({ message: "task created successfully", data: newTask });
-  } catch (err) {
-    console.error("Task creation error:", err);
-    res.status(500).json({
-      message: "cannot create task",
+    const { category } = req.params;
+
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const tasks = await Tasks.find({
+      user: req.user.id,
+      category,
     });
+
+    res.json(tasks);
+  } catch {
+    res.status(500).json({ message: "Server error" });
   }
 };
+
+//Create new task
+export const createTask = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const { taskName, category, status } = req.body;
+
+    const newTask = await Tasks.create({
+      taskName,
+      category: category.toLowerCase(),
+      status,
+      user: req.user.id,
+    });
+
+    res.status(201).json(newTask);
+  } catch (error) {
+    res.status(500).json({ message: "Error creating task" });
+  }
+};
+
 //Get all tasks
 export const getAllTasks = async (req: Request, res: Response) => {
   try {
@@ -34,42 +58,38 @@ export const getAllTasks = async (req: Request, res: Response) => {
     });
   }
 };
-
-//Get single task
-export const getTask = async (req: Request, res: Response) => {
+export const getTaskById = async (req: Request, res: Response) => {
   try {
-    const task = await Tasks.findById(req.params.id);
-    if (!task) {
-      return res.status(404).json({ message: "Task not found" });
-    }
+    const task = await Tasks.findById();
+
+    if (!task) return res.status(404).json({ message: "Task not found" });
     res.json(task);
   } catch (err) {
-    return res.status(400).json({ message: "error fetching task" });
+    res.status(500).json({ message: "Failed fetching task" });
   }
 };
 
 //Update task
 export const updateTask = async (req: Request, res: Response) => {
   try {
-    
-    const { taskName, category, status } = req.body();
-    const updateData: any = {};
-    if (taskName) updateData.taskName = taskName;
-    if (category) updateData.category = category;
-    if (status) updateData.status = status;
+    console.log("ID", req.params.id);
 
-    const updateTasks = await Tasks.findByIdAndUpdate(req.params.id, updateTask, {
-      returnDocument : "after",
-    });
+    const updateTasks = await Tasks.findByIdAndUpdate(
+      req.params.id,
+      updateTask,
+      {
+        returnDocument: "after",
+      },
+    );
     if (!updateTasks) {
-      return res.status(404).json({message: "user not found"})
+      return res.status(404).json({ message: "user not found" });
     }
+    console.log("Data", updateTask);
     res.json(updateTasks);
-
   } catch (err) {
-    return res.status(400).json({message: "failed to update user"})
+    return res.status(400).json({ message: "failed to update user" });
   }
-}
+};
 
 //delete task
 export const deleteTask = async (req: Request, res: Response) => {
@@ -80,6 +100,6 @@ export const deleteTask = async (req: Request, res: Response) => {
     }
     res.status(200).json({ message: "Task deleted successfully" });
   } catch (err) {
-    return res.status(400).json({message: "Failed to delete task" });
+    return res.status(400).json({ message: "Failed to delete task" });
   }
-}
+};
