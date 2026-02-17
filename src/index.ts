@@ -9,6 +9,7 @@ import morgan from "morgan";
 import initDB from "../src/db/db.connect";
 import { globalErrorHandler } from "./middlewares/global.error.handler.middleware";
 import { globalRateLimiter } from "./middlewares/limiter.middleware";
+import forgotpassrouter from "./routes/forgotpassRoute";
 import loginRouter from "./routes/loginRoutes";
 import taskRoutes from "./routes/taskRoute";
 import userRoutes from "./routes/userRoutes";
@@ -57,6 +58,7 @@ const bootstrap = async () => {
   app.use("/api/users", userRoutes);
   app.use("/api/tasks", taskRoutes);
   app.use("/api/login", loginRouter);
+  app.use("/api/forgotpass", forgotpassrouter);
 
   // Error handler
   app.use(globalErrorHandler);

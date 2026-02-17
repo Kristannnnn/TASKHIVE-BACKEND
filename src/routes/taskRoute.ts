@@ -12,11 +12,11 @@ import express from "express";
 //task routes
 const router = express.Router();
 //user routes
-router.get("/", getAllTasks);
-router.get("/", getTaskById);
+router.get("/",authMiddleware, getAllTasks);
+router.get("/", authMiddleware, getTaskById);
 router.post("/", authMiddleware, createTask);
 router.put("/:id", updateTask);
-router.delete("/", authMiddleware, deleteTask);
+router.delete("/:id", authMiddleware, deleteTask);
 router.get("/:category", authMiddleware, getTasksByCategory);
 
 export default router;

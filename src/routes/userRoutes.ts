@@ -1,8 +1,8 @@
 import {
   createUser,
   deleteUser,
+  forgotpass,
   getAllUsers,
-  getUser,
   updateUser,
 } from "@/controllers/userController";
 import { authMiddleware } from "@/middlewares/auth";
@@ -10,10 +10,10 @@ import express from "express";
 
 const router = express.Router();
 //user routes
-router.post("/", authMiddleware, createUser);
-router.get("/", getAllUsers);
-router.get("/:id", getUser);
-router.put("/:id", authMiddleware, updateUser);
-router.delete("/:id", authMiddleware, deleteUser);
+router.get("/", forgotpass);
+router.post("/", createUser);
+router.get("/", authMiddleware, getAllUsers);
+router.put("/:id", updateUser);
+router.delete("/:id", deleteUser);
 
 export default router;

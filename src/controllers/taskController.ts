@@ -1,15 +1,13 @@
 import { AuthRequest } from "@/middlewares/auth";
 import { default as Tasks } from "@/models/Tasks";
+import { AppError } from "@/utils/error/app-error.util";
 import { Request, Response } from "express";
 
 export const getTasksByCategory = async (req: AuthRequest, res: Response) => {
   try {
     const { category } = req.params;
 
-    if (!req.user) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
+    if (!req.user) throw new AppError("No user found", 400);
     const tasks = await Tasks.find({
       user: req.user.id,
       category,
@@ -72,22 +70,15 @@ export const getTaskById = async (req: Request, res: Response) => {
 //Update task
 export const updateTask = async (req: Request, res: Response) => {
   try {
-    console.log("ID", req.params.id);
-
-    const updateTasks = await Tasks.findByIdAndUpdate(
-      req.params.id,
-      updateTask,
-      {
-        returnDocument: "after",
-      },
-    );
+    const updateTasks = await Tasks.findByIdAndUpdate(req.params.id, req.body, {
+      returnDocument: "after",
+    });
     if (!updateTasks) {
       return res.status(404).json({ message: "user not found" });
     }
-    console.log("Data", updateTask);
     res.json(updateTasks);
   } catch (err) {
-    return res.status(400).json({ message: "failed to update user" });
+    throw new AppError("Error Updating task", 500);
   }
 };
 
