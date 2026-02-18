@@ -94,3 +94,21 @@ export const deleteTask = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Failed to delete task" });
   }
 };
+
+//get all task by category
+export const getAllCompletedTaskByCategory = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const { category } = req.params;
+    const task = await Tasks.find({ category: category, status: "completed" });
+
+    if (!task) {
+      throw new AppError("task not found", 404);
+    }
+    return res.json(task);
+  } catch (err) {
+    throw new AppError("Cannot fetch tasks", 500);
+  }
+};

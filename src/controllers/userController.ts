@@ -10,7 +10,13 @@ export const createUser = async (req: Request, res: Response) => {
     const passwordHash = await bcrypt.hash(password, 10);
     const userDataWithHash = { username, email, passwordHash };
     const savedUser = await User.create(userDataWithHash);
-    res.status(201).json(savedUser);
+    res.status(201).json({
+      message: " Registered Successfully",
+      user: {
+        username: savedUser.username,
+        email: savedUser.email,
+      },
+    });
     if (!savedUser) {
       return res.status(400).json({ message: "User creation failed" });
     }
@@ -67,6 +73,7 @@ export const updateUser = async (req: Request, res: Response) => {
     res.status(400).json({ error: err, message: "Error updating user" });
   }
 };
+
 
 //Delete user
 

@@ -1,8 +1,8 @@
 import {
   createTask,
   deleteTask,
+  getAllCompletedTaskByCategory,
   getAllTasks,
-  getTaskById,
   getTasksByCategory,
   updateTask,
 } from "@/controllers/taskController";
@@ -11,12 +11,16 @@ import express from "express";
 
 //task routes
 const router = express.Router();
-//user routes
-router.get("/",authMiddleware, getAllTasks);
-router.get("/", authMiddleware, getTaskById);
+//task routes
+router.get("/", authMiddleware, getAllTasks);
 router.post("/", authMiddleware, createTask);
 router.put("/:id", updateTask);
 router.delete("/:id", authMiddleware, deleteTask);
+router.get(
+  "/:category/completed",
+  authMiddleware,
+  getAllCompletedTaskByCategory,
+);
 router.get("/:category", authMiddleware, getTasksByCategory);
 
 export default router;
