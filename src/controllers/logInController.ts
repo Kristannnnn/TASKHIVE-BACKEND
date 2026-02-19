@@ -16,10 +16,11 @@ export const logInUser = async (req: Request, res: Response) => {
     if (!passwordMatch) {
       return res.status(401).json({ message: "Invalid password" });
     }
-    const token = generateToken(user._id.toString());
+    const { token, expiresIn } = generateToken(user._id.toString());
     res.json({
       message: "Login successful",
       token,
+      expiresIn,
       user: {
         id: user._id,
         username: user.username,

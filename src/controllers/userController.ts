@@ -74,7 +74,6 @@ export const updateUser = async (req: Request, res: Response) => {
   }
 };
 
-
 //Delete user
 
 export const deleteUser = async (req: Request, res: Response) => {
@@ -96,7 +95,7 @@ export const forgotpass = async (req: Request, res: Response) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: "Email is required" });
+      return res.status(400).json({ message: "Email not registered" });
     }
     const resetlink = `http://localhost:5173/changepassword?id=${user._id}`;
     await ForgotPassword(user.email, resetlink);
