@@ -14,7 +14,7 @@ const router = express.Router();
 //task routes
 router.get("/", authMiddleware, getAllTasks);
 router.post("/", authMiddleware, createTask);
-router.put("/:id", updateTask);
+router.put("/:id", authMiddleware, updateTask);
 router.delete("/:id", authMiddleware, deleteTask);
 router.get(
   "/:category/completed",

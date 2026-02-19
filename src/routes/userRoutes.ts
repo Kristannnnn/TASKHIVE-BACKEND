@@ -14,6 +14,6 @@ router.get("/", forgotpass);
 router.post("/", createUser);
 router.get("/", authMiddleware, getAllUsers);
 router.put("/:id", updateUser);
-router.delete("/:id", deleteUser);
+router.delete("/:id",authMiddleware, deleteUser);
 
 export default router;
